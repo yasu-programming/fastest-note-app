@@ -119,9 +119,9 @@
 - [x] **T054** WebSocket service for real-time updates in `frontend/src/services/websocket.ts`
 
 ### Offline Support
-- [ ] **T055** IndexedDB service for offline storage in `frontend/src/services/offline.ts`
-- [ ] **T056** Sync queue for offline operations in `frontend/src/services/syncQueue.ts`
-- [ ] **T057** Conflict resolution UI components in `frontend/src/components/Sync/ConflictResolver.tsx`
+- [x] **T055** IndexedDB service for offline storage in `frontend/src/services/offline.ts`
+- [x] **T056** Sync queue for offline operations in `frontend/src/services/syncQueue.ts`
+- [x] **T057** Conflict resolution UI components in `frontend/src/components/Sync/ConflictResolver.tsx`
 
 ## Phase 3.6: Performance & Polish
 
