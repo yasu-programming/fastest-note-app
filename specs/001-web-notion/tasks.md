@@ -113,10 +113,10 @@
 - [x] **T050** [P] Note list with virtual scrolling in `frontend/src/components/Notes/NoteList.tsx`
 
 ### State Management & API Integration
-- [ ] **T051** API client with TanStack Query integration in `frontend/src/services/api.ts`
-- [ ] **T052** Authentication state management in `frontend/src/stores/authStore.ts`
-- [ ] **T053** Notes and folders state with optimistic updates in `frontend/src/stores/contentStore.ts`
-- [ ] **T054** WebSocket service for real-time updates in `frontend/src/services/websocket.ts`
+- [x] **T051** API client with TanStack Query integration in `frontend/src/services/api.ts`
+- [x] **T052** Authentication state management in `frontend/src/stores/authStore.ts`
+- [x] **T053** Notes and folders state with optimistic updates in `frontend/src/stores/contentStore.ts`
+- [x] **T054** WebSocket service for real-time updates in `frontend/src/services/websocket.ts`
 
 ### Offline Support
 - [ ] **T055** IndexedDB service for offline storage in `frontend/src/services/offline.ts`
