@@ -131,11 +131,11 @@
 - [x] **T060** [P] Frontend bundle optimization and code splitting in `frontend/next.config.js`
 
 ### Testing & Validation  
-- [ ] **T061** [P] Unit tests for validation logic in `backend/tests/unit/test_validation.rs`
-- [ ] **T062** [P] Frontend unit tests with Jest in `frontend/tests/unit/`
-- [ ] **T063** [P] End-to-end tests with Playwright in `frontend/tests/e2e/`
-- [ ] **T064** Performance benchmark tests (<200ms API) in `backend/tests/performance/`
-- [ ] **T065** Execute quickstart validation scenarios in `specs/001-web-notion/quickstart.md`
+- [x] **T061** [P] Unit tests for validation logic in `backend/tests/unit/test_validation.rs`
+- [x] **T062** [P] Frontend unit tests with Jest in `frontend/tests/unit/`
+- [x] **T063** [P] End-to-end tests with Playwright in `frontend/tests/e2e/`
+- [x] **T064** Performance benchmark tests (<200ms API) in `backend/tests/performance/`
+- [x] **T065** Execute quickstart validation scenarios in `specs/001-web-notion/quickstart.md`
 
 ### Documentation & Cleanup
 - [ ] **T066** [P] API documentation generation from OpenAPI spec
