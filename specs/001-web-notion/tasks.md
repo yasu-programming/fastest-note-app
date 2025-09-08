@@ -107,10 +107,10 @@
 ## Phase 3.5: Frontend Implementation
 
 ### Core Components  
-- [ ] **T047** [P] Authentication forms: Login/Register in `frontend/src/components/Auth/`
-- [ ] **T048** [P] Note editor component with auto-save in `frontend/src/components/Editor/NoteEditor.tsx`
-- [ ] **T049** [P] Folder tree navigation component in `frontend/src/components/Navigation/FolderTree.tsx`
-- [ ] **T050** [P] Note list with virtual scrolling in `frontend/src/components/Notes/NoteList.tsx`
+- [x] **T047** [P] Authentication forms: Login/Register in `frontend/src/components/Auth/`
+- [x] **T048** [P] Note editor component with auto-save in `frontend/src/components/Editor/NoteEditor.tsx`
+- [x] **T049** [P] Folder tree navigation component in `frontend/src/components/Navigation/FolderTree.tsx`
+- [x] **T050** [P] Note list with virtual scrolling in `frontend/src/components/Notes/NoteList.tsx`
 
 ### State Management & API Integration
 - [ ] **T051** API client with TanStack Query integration in `frontend/src/services/api.ts`
