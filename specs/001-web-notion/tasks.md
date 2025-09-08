@@ -126,9 +126,9 @@
 ## Phase 3.6: Performance & Polish
 
 ### Performance Optimization
-- [ ] **T058** [P] Database query optimization and indexing in `backend/src/database/optimizations.sql`
-- [ ] **T059** [P] Redis caching layer for frequently accessed data in `backend/src/cache/redis_cache.rs`
-- [ ] **T060** [P] Frontend bundle optimization and code splitting in `frontend/next.config.js`
+- [x] **T058** [P] Database query optimization and indexing in `backend/src/database/optimizations.sql`
+- [x] **T059** [P] Redis caching layer for frequently accessed data in `backend/src/cache/redis_cache.rs`
+- [x] **T060** [P] Frontend bundle optimization and code splitting in `frontend/next.config.js`
 
 ### Testing & Validation  
 - [ ] **T061** [P] Unit tests for validation logic in `backend/tests/unit/test_validation.rs`
