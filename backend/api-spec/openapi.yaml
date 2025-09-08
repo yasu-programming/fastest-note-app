@@ -1,0 +1,913 @@
+openapi: 3.0.3
+info:
+  title: Fastest Note App API
+  description: |
+    High-performance note-taking application API designed to be faster than Notion.
+    
+    **Performance Targets:**
+    - API response time < 200ms (95th percentile)
+    - WebSocket message delivery < 50ms
+    - Full-text search < 100ms
+    
+    **Key Features:**
+    - Hierarchical folder organization (max 10 levels)
+    - Real-time synchronization via WebSocket
+    - Offline support with conflict resolution
+    - Full-text search across notes
+    - JWT-based authentication
+    - Data limits: 1MB max note size, 1000 items per folder
+    
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@fastest-notes.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:3001/api/v1
+    description: Development server
+  - url: https://api.fastest-notes.com/v1
+    description: Production server
+
+security:
+  - BearerAuth: []
+
+paths:
+  # Authentication Endpoints
+  /auth/register:
+    post:
+      tags: [Authentication]
+      summary: Register new user account
+      description: Create a new user account with email and password
+      operationId: registerUser
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: "user@example.com"
+                password:
+                  type: string
+                  minLength: 8
+                  example: "SecurePass123!"
+              additionalProperties: false
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          description: Email already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /auth/login:
+    post:
+      tags: [Authentication]
+      summary: Login user
+      description: Authenticate user and receive JWT tokens
+      operationId: loginUser
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: "user@example.com"
+                password:
+                  type: string
+                  example: "SecurePass123!"
+              additionalProperties: false
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /auth/refresh:
+    post:
+      tags: [Authentication]
+      summary: Refresh JWT token
+      description: Get new access token using refresh token
+      operationId: refreshToken
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [refresh_token]
+              properties:
+                refresh_token:
+                  type: string
+                  example: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
+              additionalProperties: false
+      responses:
+        '200':
+          description: Token refreshed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # Notes Endpoints
+  /notes:
+    get:
+      tags: [Notes]
+      summary: List notes
+      description: |
+        Retrieve paginated list of notes with optional search and folder filtering.
+        **Performance target: < 200ms**
+      operationId: listNotes
+      parameters:
+        - name: search
+          in: query
+          description: Full-text search query
+          schema:
+            type: string
+            example: "project alpha"
+        - name: folder_id
+          in: query
+          description: Filter by folder ID
+          schema:
+            type: string
+            format: uuid
+        - name: page
+          in: query
+          description: Page number (1-based)
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          description: Items per page (max 100)
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 50
+        - name: sort
+          in: query
+          description: Sort order
+          schema:
+            type: string
+            enum: [created_at, updated_at, title]
+            default: updated_at
+        - name: order
+          in: query
+          description: Sort direction
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+      responses:
+        '200':
+          description: Notes retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotesResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      tags: [Notes]
+      summary: Create note
+      description: |
+        Create a new note. **Performance target: < 200ms**
+        Maximum content size: 1MB
+      operationId: createNote
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title]
+              properties:
+                title:
+                  type: string
+                  maxLength: 255
+                  example: "My New Note"
+                content:
+                  type: string
+                  maxLength: 1048576
+                  example: "This is the note content..."
+                folder_id:
+                  type: string
+                  format: uuid
+                  example: "123e4567-e89b-12d3-a456-426614174000"
+              additionalProperties: false
+      responses:
+        '201':
+          description: Note created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Note'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          description: Validation error (content too large, folder limits exceeded)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+
+  /notes/{id}:
+    get:
+      tags: [Notes]
+      summary: Get note by ID
+      description: Retrieve a specific note by its ID
+      operationId: getNote
+      parameters:
+        - $ref: '#/components/parameters/NoteId'
+      responses:
+        '200':
+          description: Note retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Note'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags: [Notes]
+      summary: Update note
+      description: |
+        Update an existing note. **Performance target: < 200ms**
+        Uses optimistic locking with version field.
+      operationId: updateNote
+      parameters:
+        - $ref: '#/components/parameters/NoteId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  maxLength: 255
+                  example: "Updated Note Title"
+                content:
+                  type: string
+                  maxLength: 1048576
+                  example: "Updated note content..."
+                version:
+                  type: integer
+                  description: Version for optimistic locking
+                  example: 5
+              additionalProperties: false
+      responses:
+        '200':
+          description: Note updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Note'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: Version conflict (optimistic locking)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConflictError'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+    delete:
+      tags: [Notes]
+      summary: Delete note
+      description: Permanently delete a note
+      operationId: deleteNote
+      parameters:
+        - $ref: '#/components/parameters/NoteId'
+      responses:
+        '204':
+          description: Note deleted successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /notes/{id}/move:
+    post:
+      tags: [Notes]
+      summary: Move note to folder
+      description: Move a note to a different folder or root level
+      operationId: moveNote
+      parameters:
+        - $ref: '#/components/parameters/NoteId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                folder_id:
+                  type: string
+                  format: uuid
+                  nullable: true
+                  description: Target folder ID (null for root level)
+                  example: "123e4567-e89b-12d3-a456-426614174000"
+              additionalProperties: false
+      responses:
+        '200':
+          description: Note moved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Note'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          description: Invalid move operation (folder limits, circular reference)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+
+  # Folders Endpoints
+  /folders:
+    get:
+      tags: [Folders]
+      summary: List folders
+      description: Retrieve hierarchical folder structure
+      operationId: listFolders
+      parameters:
+        - name: parent_id
+          in: query
+          description: Filter by parent folder ID (null for root folders)
+          schema:
+            type: string
+            format: uuid
+        - name: include_counts
+          in: query
+          description: Include item counts for each folder
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Folders retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FoldersResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      tags: [Folders]
+      summary: Create folder
+      description: |
+        Create a new folder. **Performance target: < 200ms**
+        Maximum folder depth: 10 levels
+      operationId: createFolder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name:
+                  type: string
+                  maxLength: 255
+                  example: "Project Documents"
+                parent_folder_id:
+                  type: string
+                  format: uuid
+                  nullable: true
+                  description: Parent folder ID (null for root level)
+                  example: "123e4567-e89b-12d3-a456-426614174000"
+              additionalProperties: false
+      responses:
+        '201':
+          description: Folder created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Folder'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          description: Validation error (depth limit exceeded, circular reference)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+
+  /folders/{id}:
+    get:
+      tags: [Folders]
+      summary: Get folder by ID
+      description: Retrieve a specific folder with its contents
+      operationId: getFolder
+      parameters:
+        - $ref: '#/components/parameters/FolderId'
+        - name: include_contents
+          in: query
+          description: Include folder contents (notes and subfolders)
+          schema:
+            type: boolean
+            default: true
+      responses:
+        '200':
+          description: Folder retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FolderWithContents'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags: [Folders]
+      summary: Update folder
+      description: Update folder name or move to different parent
+      operationId: updateFolder
+      parameters:
+        - $ref: '#/components/parameters/FolderId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  maxLength: 255
+                  example: "Renamed Folder"
+                parent_folder_id:
+                  type: string
+                  format: uuid
+                  nullable: true
+                  description: New parent folder ID
+                  example: "123e4567-e89b-12d3-a456-426614174000"
+              additionalProperties: false
+      responses:
+        '200':
+          description: Folder updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Folder'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          description: Invalid operation (circular reference, depth limit)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+
+    delete:
+      tags: [Folders]
+      summary: Delete folder
+      description: Delete folder and optionally its contents
+      operationId: deleteFolder
+      parameters:
+        - $ref: '#/components/parameters/FolderId'
+        - name: force
+          in: query
+          description: Force delete non-empty folder
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '204':
+          description: Folder deleted successfully
+        '400':
+          description: Folder not empty (use force parameter)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # WebSocket endpoint documentation
+  /ws:
+    get:
+      tags: [WebSocket]
+      summary: WebSocket connection
+      description: |
+        Establish WebSocket connection for real-time updates.
+        **Performance target: < 50ms message delivery**
+        
+        Connection URL: `ws://localhost:3001/ws?token={jwt_token}`
+        
+        **Message Types:**
+        - `subscribe_note`: Subscribe to note updates
+        - `unsubscribe_note`: Unsubscribe from note updates
+        - `note_updated`: Real-time note update notification
+        - `note_created`: New note notification
+        - `note_deleted`: Note deletion notification
+        
+        **Authentication:**
+        JWT token must be provided in query parameter or Authorization header.
+        
+      operationId: establishWebSocketConnection
+      parameters:
+        - name: token
+          in: query
+          description: JWT access token for authentication
+          required: true
+          schema:
+            type: string
+            example: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
+      responses:
+        '101':
+          description: WebSocket connection established
+        '401':
+          description: Authentication failed
+        '400':
+          description: Invalid request
+
+  # Health check
+  /health:
+    get:
+      tags: [System]
+      summary: Health check
+      description: Check API health status
+      operationId: healthCheck
+      security: []
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "healthy"
+                  version:
+                    type: string
+                    example: "1.0.0"
+                  timestamp:
+                    type: string
+                    format: date-time
+                    example: "2023-12-07T10:30:00Z"
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT access token obtained from login endpoint
+
+  parameters:
+    NoteId:
+      name: id
+      in: path
+      required: true
+      description: Unique identifier for the note
+      schema:
+        type: string
+        format: uuid
+        example: "123e4567-e89b-12d3-a456-426614174000"
+
+    FolderId:
+      name: id
+      in: path
+      required: true
+      description: Unique identifier for the folder
+      schema:
+        type: string
+        format: uuid
+        example: "123e4567-e89b-12d3-a456-426614174000"
+
+  schemas:
+    # Authentication schemas
+    AuthResponse:
+      type: object
+      required: [access_token, refresh_token, expires_in, user]
+      properties:
+        access_token:
+          type: string
+          description: JWT access token
+          example: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
+        refresh_token:
+          type: string
+          description: JWT refresh token
+          example: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
+        expires_in:
+          type: integer
+          description: Token expiration time in seconds
+          example: 3600
+        user:
+          $ref: '#/components/schemas/User'
+
+    User:
+      type: object
+      required: [id, email, created_at]
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        email:
+          type: string
+          format: email
+          example: "user@example.com"
+        created_at:
+          type: string
+          format: date-time
+          example: "2023-12-07T10:30:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2023-12-07T10:30:00Z"
+
+    # Note schemas
+    Note:
+      type: object
+      required: [id, title, content, user_id, version, created_at, updated_at]
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        title:
+          type: string
+          maxLength: 255
+          example: "My Important Note"
+        content:
+          type: string
+          maxLength: 1048576
+          example: "This is the note content..."
+        folder_id:
+          type: string
+          format: uuid
+          nullable: true
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        user_id:
+          type: string
+          format: uuid
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        version:
+          type: integer
+          description: Version number for optimistic locking
+          example: 1
+        created_at:
+          type: string
+          format: date-time
+          example: "2023-12-07T10:30:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2023-12-07T10:30:00Z"
+
+    NotesResponse:
+      type: object
+      required: [items, total, page, limit, has_more]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Note'
+        total:
+          type: integer
+          description: Total number of notes
+          example: 150
+        page:
+          type: integer
+          description: Current page number
+          example: 1
+        limit:
+          type: integer
+          description: Items per page
+          example: 50
+        has_more:
+          type: boolean
+          description: Whether there are more pages
+          example: true
+
+    # Folder schemas
+    Folder:
+      type: object
+      required: [id, name, path, level, user_id, created_at, updated_at]
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        name:
+          type: string
+          maxLength: 255
+          example: "Project Documents"
+        parent_folder_id:
+          type: string
+          format: uuid
+          nullable: true
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        path:
+          type: string
+          description: Materialized path for hierarchy
+          example: "/projects/alpha/"
+        level:
+          type: integer
+          description: Folder depth level (0-9, max 10 levels)
+          example: 2
+        user_id:
+          type: string
+          format: uuid
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        item_count:
+          type: integer
+          description: Number of direct children (notes + subfolders)
+          example: 25
+        created_at:
+          type: string
+          format: date-time
+          example: "2023-12-07T10:30:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2023-12-07T10:30:00Z"
+
+    FoldersResponse:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Folder'
+
+    FolderWithContents:
+      allOf:
+        - $ref: '#/components/schemas/Folder'
+        - type: object
+          properties:
+            notes:
+              type: array
+              items:
+                $ref: '#/components/schemas/Note'
+            subfolders:
+              type: array
+              items:
+                $ref: '#/components/schemas/Folder'
+
+    # Error schemas
+    Error:
+      type: object
+      required: [error, message]
+      properties:
+        error:
+          type: string
+          example: "invalid_request"
+        message:
+          type: string
+          example: "The request is invalid or malformed"
+        details:
+          type: object
+          additionalProperties: true
+
+    ValidationError:
+      type: object
+      required: [error, message, validation_errors]
+      properties:
+        error:
+          type: string
+          example: "validation_failed"
+        message:
+          type: string
+          example: "Request validation failed"
+        validation_errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+          example:
+            content: ["Content size exceeds 1MB limit"]
+            title: ["Title is required"]
+
+    ConflictError:
+      type: object
+      required: [error, message, current_version]
+      properties:
+        error:
+          type: string
+          example: "version_conflict"
+        message:
+          type: string
+          example: "Resource was modified by another user"
+        current_version:
+          type: integer
+          example: 7
+        current_data:
+          type: object
+          description: Current state of the resource
+
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Unauthorized:
+      description: Authentication required or invalid
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    ValidationError:
+      description: Validation error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ValidationError'
+
+tags:
+  - name: Authentication
+    description: User authentication and authorization endpoints
+  - name: Notes
+    description: Note management operations
+  - name: Folders
+    description: Folder hierarchy management
+  - name: WebSocket
+    description: Real-time synchronization via WebSocket
+  - name: System
+    description: System health and status endpoints
+
+externalDocs:
+  description: Find more information about the Fastest Note App
+  url: https://github.com/fastest-note-app/docs

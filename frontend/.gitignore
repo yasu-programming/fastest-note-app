@@ -61,3 +61,6 @@ Thumbs.db
 # Jest
 /coverage/
 /.nyc_output/
+
+*storybook.log
+storybook-static
