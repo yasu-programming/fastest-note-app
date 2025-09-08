@@ -1,0 +1,68 @@
+[package]
+name = "fastest-note-backend"
+version = "1.0.0"
+edition = "2021"
+
+[dependencies]
+# Web framework
+axum = { version = "0.7", features = ["ws", "headers", "multipart"] }
+tokio = { version = "1.0", features = ["full"] }
+tower = { version = "0.4", features = ["full"] }
+tower-http = { version = "0.5", features = ["cors", "compression-gzip"] }
+
+# Database
+sqlx = { version = "0.7", features = ["runtime-tokio-rustls", "postgres", "uuid", "chrono", "migrate"] }
+deadpool-postgres = "0.12"
+
+# Redis caching
+redis = { version = "0.24", features = ["tokio-comp", "connection-manager"] }
+deadpool-redis = "0.14"
+
+# Authentication & Security  
+jsonwebtoken = "9.2"
+bcrypt = "0.15"
+uuid = { version = "1.6", features = ["v4", "serde"] }
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Async utilities
+futures = "0.3"
+async-trait = "0.1"
+
+# Date/Time
+chrono = { version = "0.4", features = ["serde"] }
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# Environment variables
+dotenvy = "0.15"
+
+# Validation
+validator = { version = "0.16", features = ["derive"] }
+
+# HTTP client (for testing)
+reqwest = { version = "0.11", features = ["json"] }
+
+[dev-dependencies]
+# Testing
+tokio-test = "0.4"
+tempfile = "3.8"
+testcontainers = "0.15"
+testcontainers-modules = { version = "0.3", features = ["postgres", "redis"] }
+
+# Performance testing
+criterion = { version = "0.5", features = ["html_reports"] }
+
+[[bin]]
+name = "server"
+path = "src/main.rs"
+
+[profile.release]
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true

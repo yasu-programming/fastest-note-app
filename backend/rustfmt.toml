@@ -1,0 +1,50 @@
+# Rustfmt configuration for fastest-note-backend
+
+# Edition and stability
+edition = "2021"
+unstable_features = true
+
+# Line width and indentation
+max_width = 100
+hard_tabs = false
+tab_spaces = 4
+
+# Imports
+imports_granularity = "Crate"
+reorder_imports = true
+group_imports = "StdExternalCrate"
+
+# Functions and methods
+fn_args_layout = "Tall"
+brace_style = "SameLineWhere"
+
+# Control flow
+control_brace_style = "AlwaysSameLine"
+else_if_brace_style = "AlwaysSameLine"
+
+# Formatting options
+normalize_comments = true
+normalize_doc_attributes = true
+format_code_in_doc_comments = true
+wrap_comments = true
+comment_width = 80
+
+# Struct and enum formatting
+struct_lit_single_line = true
+enum_discrim_align_threshold = 20
+
+# String formatting  
+format_strings = true
+format_macro_matchers = true
+
+# Error handling
+use_try_shorthand = true
+
+# Miscellaneous
+remove_nested_parens = true
+space_after_colon = true
+space_before_colon = false
+spaces_around_ranges = false
+
+# Import and use formatting
+merge_imports = true

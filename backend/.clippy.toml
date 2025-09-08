@@ -1,0 +1,53 @@
+# Clippy configuration for fastest-note-backend
+# Enable additional lints for better code quality
+
+# Warning level lints to enable
+warn-on = [
+    "clippy::all",
+    "clippy::pedantic", 
+    "clippy::cargo",
+    "clippy::nursery",
+]
+
+# Allow these lints that can be overly strict
+allow = [
+    # Allow unused imports during development
+    "unused_imports",
+    
+    # Allow TODO comments during development  
+    "clippy::todo",
+    
+    # Allow module inception (common in Rust web apps)
+    "clippy::module_name_repetitions",
+    
+    # Allow similar names (e.g., user_id vs user)
+    "clippy::similar_names",
+    
+    # Allow large enum variants (common with Serde)
+    "clippy::large_enum_variant",
+    
+    # Allow missing docs during development
+    "clippy::missing_docs_in_private_items",
+    "clippy::missing_errors_doc",
+    "clippy::missing_panics_doc",
+    
+    # Allow single match expressions
+    "clippy::single_match_else",
+    
+    # Allow struct field reordering
+    "clippy::struct_field_names",
+]
+
+# Deny these lints (treat as errors)
+deny = [
+    # Security-related lints
+    "clippy::unwrap_used",
+    "clippy::expect_used", 
+    "clippy::panic",
+    "clippy::unimplemented",
+    "clippy::unreachable",
+    
+    # Performance lints
+    "clippy::clone_on_ref_ptr",
+    "clippy::rc_buffer",
+]
