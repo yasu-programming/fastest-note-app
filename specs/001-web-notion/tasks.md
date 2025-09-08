@@ -31,78 +31,78 @@
 
 ## Phase 3.1: Setup
 
-- [ ] **T001** Create project structure: `backend/` and `frontend/` directories with Rust and Next.js scaffolding
-- [ ] **T002** Initialize Rust backend project with Axum, PostgreSQL, Redis dependencies in `backend/Cargo.toml`
-- [ ] **T003** Initialize Next.js frontend project with TypeScript, TanStack Query, IndexedDB in `frontend/package.json`
-- [ ] **T004** [P] Configure Rust linting and formatting tools: `backend/.clippy.toml`, `backend/rustfmt.toml`
-- [ ] **T005** [P] Configure frontend linting: `frontend/.eslintrc.json`, `frontend/prettier.config.js`
-- [ ] **T006** Create database migration files in `backend/migrations/001_initial_schema.sql` from data-model.md
-- [ ] **T007** [P] Setup Redis configuration and connection pool in `backend/src/redis.rs`
-- [ ] **T008** [P] Setup PostgreSQL connection pool with deadpool in `backend/src/database.rs`
+- [x] **T001** Create project structure: `backend/` and `frontend/` directories with Rust and Next.js scaffolding
+- [x] **T002** Initialize Rust backend project with Axum, PostgreSQL, Redis dependencies in `backend/Cargo.toml`
+- [x] **T003** Initialize Next.js frontend project with TypeScript, TanStack Query, IndexedDB in `frontend/package.json`
+- [x] **T004** [P] Configure Rust linting and formatting tools: `backend/.clippy.toml`, `backend/rustfmt.toml`
+- [x] **T005** [P] Configure frontend linting: `frontend/.eslintrc.json`, `frontend/prettier.config.js`
+- [x] **T006** Create database migration files in `backend/migrations/001_initial_schema.sql` from data-model.md
+- [x] **T007** [P] Setup Redis configuration and connection pool in `backend/src/redis.rs`
+- [x] **T008** [P] Setup PostgreSQL connection pool with deadpool in `backend/src/database.rs`
 
 ## Phase 3.2: Tests First (TDD) ⚠️ MUST COMPLETE BEFORE 3.3
 
 **CRITICAL: These tests MUST be written and MUST FAIL before ANY implementation**
 
 ### Authentication Contract Tests
-- [ ] **T009** [P] Contract test POST /auth/register in `backend/tests/contract/test_auth_register.rs`
-- [ ] **T010** [P] Contract test POST /auth/login in `backend/tests/contract/test_auth_login.rs` 
-- [ ] **T011** [P] Contract test POST /auth/refresh in `backend/tests/contract/test_auth_refresh.rs`
+- [x] **T009** [P] Contract test POST /auth/register in `backend/tests/contract/test_auth_register.rs`
+- [x] **T010** [P] Contract test POST /auth/login in `backend/tests/contract/test_auth_login.rs` 
+- [x] **T011** [P] Contract test POST /auth/refresh in `backend/tests/contract/test_auth_refresh.rs`
 
 ### Folder Contract Tests  
-- [ ] **T012** [P] Contract test GET /folders in `backend/tests/contract/test_folders_list.rs`
-- [ ] **T013** [P] Contract test POST /folders in `backend/tests/contract/test_folders_create.rs`
-- [ ] **T014** [P] Contract test PUT /folders/{id} in `backend/tests/contract/test_folders_update.rs`
-- [ ] **T015** [P] Contract test DELETE /folders/{id} in `backend/tests/contract/test_folders_delete.rs`
+- [x] **T012** [P] Contract test GET /folders in `backend/tests/contract/test_folders_list.rs`
+- [x] **T013** [P] Contract test POST /folders in `backend/tests/contract/test_folders_create.rs`
+- [x] **T014** [P] Contract test PUT /folders/{id} in `backend/tests/contract/test_folders_update.rs`
+- [x] **T015** [P] Contract test DELETE /folders/{id} in `backend/tests/contract/test_folders_delete.rs`
 
 ### Note Contract Tests
-- [ ] **T016** [P] Contract test GET /notes in `backend/tests/contract/test_notes_list.rs`
-- [ ] **T017** [P] Contract test POST /notes in `backend/tests/contract/test_notes_create.rs`
-- [ ] **T018** [P] Contract test PUT /notes/{id} in `backend/tests/contract/test_notes_update.rs`
-- [ ] **T019** [P] Contract test DELETE /notes/{id} in `backend/tests/contract/test_notes_delete.rs`
-- [ ] **T020** [P] Contract test POST /notes/{id}/move in `backend/tests/contract/test_notes_move.rs`
+- [x] **T016** [P] Contract test GET /notes in `backend/tests/contract/test_notes_list.rs`
+- [x] **T017** [P] Contract test POST /notes in `backend/tests/contract/test_notes_create.rs`
+- [x] **T018** [P] Contract test PUT /notes/{id} in `backend/tests/contract/test_notes_update.rs`
+- [x] **T019** [P] Contract test DELETE /notes/{id} in `backend/tests/contract/test_notes_delete.rs`
+- [x] **T020** [P] Contract test POST /notes/{id}/move in `backend/tests/contract/test_notes_move.rs`
 
 ### WebSocket Contract Tests
-- [ ] **T021** [P] WebSocket connection and auth test in `backend/tests/contract/test_websocket_auth.rs`
-- [ ] **T022** [P] WebSocket note subscription test in `backend/tests/contract/test_websocket_subscribe.rs`
-- [ ] **T023** [P] WebSocket real-time operations test in `backend/tests/contract/test_websocket_operations.rs`
+- [x] **T021** [P] WebSocket connection and auth test in `backend/tests/contract/test_websocket_auth.rs`
+- [x] **T022** [P] WebSocket note subscription test in `backend/tests/contract/test_websocket_subscribe.rs`
+- [x] **T023** [P] WebSocket real-time operations test in `backend/tests/contract/test_websocket_operations.rs`
 
 ### Integration Tests from Quickstart Scenarios
-- [ ] **T024** [P] Integration test: User registration flow in `backend/tests/integration/test_user_registration.rs`
-- [ ] **T025** [P] Integration test: Note creation <200ms in `backend/tests/integration/test_note_performance.rs`
-- [ ] **T026** [P] Integration test: Folder hierarchy creation in `backend/tests/integration/test_folder_hierarchy.rs`
-- [ ] **T027** [P] Integration test: Note movement between folders in `backend/tests/integration/test_note_movement.rs`
-- [ ] **T028** [P] Integration test: Real-time synchronization in `backend/tests/integration/test_realtime_sync.rs`
-- [ ] **T029** [P] Integration test: Search functionality in `backend/tests/integration/test_search.rs`
-- [ ] **T030** [P] Integration test: Data size limits (1MB notes, 1000 items/folder) in `backend/tests/integration/test_data_limits.rs`
-- [ ] **T031** [P] Integration test: Conflict resolution in `backend/tests/integration/test_conflict_resolution.rs`
+- [x] **T024** [P] Integration test: User registration flow in `backend/tests/integration/test_user_registration.rs`
+- [x] **T025** [P] Integration test: Note creation <200ms in `backend/tests/integration/test_note_performance.rs`
+- [x] **T026** [P] Integration test: Folder hierarchy creation in `backend/tests/integration/test_folder_hierarchy.rs`
+- [x] **T027** [P] Integration test: Note movement between folders in `backend/tests/integration/test_note_movement.rs`
+- [x] **T028** [P] Integration test: Real-time synchronization in `backend/tests/integration/test_realtime_sync.rs`
+- [x] **T029** [P] Integration test: Search functionality in `backend/tests/integration/test_search.rs`
+- [x] **T030** [P] Integration test: Data size limits (1MB notes, 1000 items/folder) in `backend/tests/integration/test_data_limits.rs`
+- [x] **T031** [P] Integration test: Conflict resolution in `backend/tests/integration/test_conflict_resolution.rs`
 
 ## Phase 3.3: Core Implementation (ONLY after tests are failing)
 
 ### Database Models
-- [ ] **T032** [P] User model with bcrypt password hashing in `backend/src/models/user.rs`
-- [ ] **T033** [P] Folder model with hierarchy path management in `backend/src/models/folder.rs`
-- [ ] **T034** [P] Note model with version tracking in `backend/src/models/note.rs`
+- [x] **T032** [P] User model with bcrypt password hashing in `backend/src/models/user.rs`
+- [x] **T033** [P] Folder model with hierarchy path management in `backend/src/models/folder.rs`
+- [x] **T034** [P] Note model with version tracking in `backend/src/models/note.rs`
 
 ### Service Layer
-- [ ] **T035** AuthService: registration, login, JWT generation in `backend/src/services/auth_service.rs`
-- [ ] **T036** FolderService: CRUD with hierarchy validation in `backend/src/services/folder_service.rs`
-- [ ] **T037** NoteService: CRUD with size/version validation in `backend/src/services/note_service.rs`
-- [ ] **T038** SyncService: WebSocket management and operational transforms in `backend/src/services/sync_service.rs`
+- [x] **T035** AuthService: registration, login, JWT generation in `backend/src/services/auth.rs`
+- [x] **T036** FolderService: CRUD with hierarchy validation in `backend/src/services/folder.rs`
+- [x] **T037** NoteService: CRUD with size/version validation in `backend/src/services/note.rs`
+- [x] **T038** SyncService: WebSocket management and operational transforms in `backend/src/services/websocket.rs`
 
 ## Phase 3.4: API Implementation
 
 ### REST Endpoints
-- [ ] **T039** Authentication endpoints: `/auth/register`, `/auth/login`, `/auth/refresh` in `backend/src/api/auth.rs`
-- [ ] **T040** Folder endpoints: GET/POST/PUT/DELETE `/folders` in `backend/src/api/folders.rs`
-- [ ] **T041** Note endpoints: GET/POST/PUT/DELETE `/notes` + move in `backend/src/api/notes.rs`
-- [ ] **T042** WebSocket handler for real-time sync in `backend/src/api/websocket.rs`
+- [x] **T039** Authentication endpoints: `/auth/register`, `/auth/login`, `/auth/refresh` in `backend/src/handlers/auth.rs`
+- [x] **T040** Folder endpoints: GET/POST/PUT/DELETE `/folders` in `backend/src/handlers/folder.rs`
+- [x] **T041** Note endpoints: GET/POST/PUT/DELETE `/notes` + move in `backend/src/handlers/note.rs`
+- [x] **T042** WebSocket handler for real-time sync in `backend/src/handlers/websocket.rs`
 
 ### Middleware & Infrastructure
-- [ ] **T043** JWT authentication middleware in `backend/src/middleware/auth.rs`
-- [ ] **T044** Request logging and error handling middleware in `backend/src/middleware/logging.rs`
-- [ ] **T045** CORS and security headers middleware in `backend/src/middleware/security.rs`
-- [ ] **T046** Rate limiting middleware in `backend/src/middleware/rate_limit.rs`
+- [x] **T043** JWT authentication middleware in `backend/src/middleware/auth.rs`
+- [x] **T044** Request logging and error handling middleware in `backend/src/middleware/logging.rs`
+- [x] **T045** CORS and security headers middleware in `backend/src/middleware/cors.rs`
+- [x] **T046** Rate limiting middleware in `backend/src/middleware/rate_limit.rs`
 
 ## Phase 3.5: Frontend Implementation
 
@@ -138,10 +138,10 @@
 - [x] **T065** Execute quickstart validation scenarios in `specs/001-web-notion/quickstart.md`
 
 ### Documentation & Cleanup
-- [ ] **T066** [P] API documentation generation from OpenAPI spec
-- [ ] **T067** [P] Frontend component documentation with Storybook
-- [ ] **T068** Code cleanup and remove TODO comments
-- [ ] **T069** Final security audit and dependency updates
+- [x] **T066** [P] API documentation generation from OpenAPI spec
+- [x] **T067** [P] Frontend component documentation with Storybook
+- [x] **T068** Code cleanup and remove TODO comments
+- [x] **T069** Final security audit and dependency updates
 
 ## Dependencies
 
