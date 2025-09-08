@@ -1,0 +1,60 @@
+{
+  "extends": [
+    "next/core-web-vitals",
+    "next/typescript"
+  ],
+  "rules": {
+    // Performance and optimization rules
+    "@next/next/no-img-element": "error",
+    "@next/next/no-html-link-for-pages": "error",
+    
+    // Code quality rules
+    "prefer-const": "error",
+    "no-unused-vars": "off", // Use TypeScript's built-in unused variable detection
+    "@typescript-eslint/no-unused-vars": ["error", { 
+      "argsIgnorePattern": "^_",
+      "varsIgnorePattern": "^_" 
+    }],
+    "@typescript-eslint/no-explicit-any": "warn",
+    
+    // React best practices
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn",
+    "react/jsx-key": "error",
+    "react/no-array-index-key": "warn",
+    
+    // Import organization
+    "import/order": ["error", {
+      "groups": [
+        "builtin",
+        "external", 
+        "internal",
+        "parent",
+        "sibling",
+        "index"
+      ],
+      "newlines-between": "always",
+      "alphabetize": {
+        "order": "asc",
+        "caseInsensitive": true
+      }
+    }],
+    
+    // Formatting (let Prettier handle most formatting)
+    "semi": ["error", "always"],
+    "quotes": ["error", "single", { "avoidEscape": true }],
+    
+    // Security
+    "react/no-danger": "error",
+    "react/no-danger-with-children": "error"
+  },
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module"
+  },
+  "env": {
+    "browser": true,
+    "es2022": true,
+    "node": true
+  }
+}
